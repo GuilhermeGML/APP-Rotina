@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, TextInput, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Button, TextInput, FlatList, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type PrimeiraScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Primeira">;
 
@@ -19,34 +19,22 @@ export default function PrimeiraScreen() {
     (hoje.getMonth() + 1).toString().padStart(2, "0")
   }/${hoje.getFullYear()}`;
 
-  // 🔹 Carregar tarefas salvas ao abrir o app
+  // 🔹 Buscar tarefas do backend ao abrir o app
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const savedTasks = await AsyncStorage.getItem("tasks");
-        const savedDoneTasks = await AsyncStorage.getItem("doneTasks");
-
-        if (savedTasks) setTasks(JSON.parse(savedTasks));
-        if (savedDoneTasks) setDoneTasks(JSON.parse(savedDoneTasks));
+        const resPendentes = await fetch('http://186.217.115.141:3000/tasks/pending');
+        const pendentes = await resPendentes.json();
+        setTasks(pendentes);
+        const resConcluidas = await fetch('http://186.217.115.141:3000/tasks/done');
+        const concluidas = await resConcluidas.json();
+        setDoneTasks(concluidas);
       } catch (error) {
-        console.log("Erro ao carregar tarefas:", error);
+        console.log("Erro ao carregar tarefas do backend:", error);
       }
     };
     loadTasks();
   }, []);
-
-  // 🔹 Salvar no AsyncStorage sempre que mudar
-  useEffect(() => {
-    const saveTasks = async () => {
-      try {
-        await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
-        await AsyncStorage.setItem("doneTasks", JSON.stringify(doneTasks));
-      } catch (error) {
-        console.log("Erro ao salvar tarefas:", error);
-      }
-    };
-    saveTasks();
-  }, [tasks, doneTasks]);
 
   const addTask = () => {
     if (input.trim() !== "") {
@@ -73,7 +61,7 @@ export default function PrimeiraScreen() {
   const salvarPendentes = async () => {
     try {
       console.log('Enviando pendentes:', tasks);
-      await fetch('http://localhost:3000/tasks/pending', {
+  await fetch('http://186.217.115.141:3000/tasks/pending', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tasks }),
@@ -87,7 +75,7 @@ export default function PrimeiraScreen() {
   const salvarConcluidas = async () => {
     try {
       console.log('Enviando concluídas:', doneTasks);
-      await fetch('http://localhost:3000/tasks/done', {
+  await fetch('http://186.217.115.141:3000/tasks/done', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tasks: doneTasks }),
@@ -252,7 +240,8 @@ const styles = StyleSheet.create({
   navButtons: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: Platform.OS === 'android' ? 0 : 20,
+    marginBottom: Platform.OS === 'android' ? 32 : 0,
     gap: 10,
   },
   navButton: {

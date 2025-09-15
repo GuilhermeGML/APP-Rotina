@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Platform } from "react-native";
 import {
   View,
   Text,
@@ -12,7 +13,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type SegundaScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Segunda">;
 type Project = {
@@ -37,10 +38,10 @@ export default function SegundaScreen() {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const resAndamento = await fetch('http://localhost:3000/projetos/andamento');
+  const resAndamento = await fetch('http://186.217.115.141:3000/projetos/andamento');
         const andamento = await resAndamento.json();
         setProjects(andamento);
-        const resConcluidos = await fetch('http://localhost:3000/projetos/concluidos');
+  const resConcluidos = await fetch('http://186.217.115.141:3000/projetos/concluidos');
         const concluidos = await resConcluidos.json();
         setDoneProjects(concluidos);
       } catch (error) {
@@ -130,7 +131,7 @@ export default function SegundaScreen() {
           <View style={{ alignItems: 'center', marginTop: 10 }}>
             <Button title="Salvar" onPress={async () => {
               try {
-                await fetch('http://localhost:3000/projetos/andamento', {
+                await fetch('http://186.217.115.141:3000/projetos/andamento', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(projects),
@@ -175,7 +176,7 @@ export default function SegundaScreen() {
           <View style={{ alignItems: 'center', marginTop: 10 }}>
             <Button title="Salvar" onPress={async () => {
               try {
-                await fetch('http://localhost:3000/projetos/concluidos', {
+                await fetch('http://186.217.115.141:3000/projetos/concluidos', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(doneProjects),
@@ -276,7 +277,8 @@ const styles = StyleSheet.create({
   navButtons: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: Platform.OS === 'android' ? 0 : 20,
+    marginBottom: Platform.OS === 'android' ? 32 : 0,
     gap: 10,
   },
   navButton: {

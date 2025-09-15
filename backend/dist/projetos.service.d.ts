@@ -1,6 +1,8 @@
 export declare class ProjetosService {
-    private andamentoPath;
-    private concluidosPath;
+    private dataDir;
+    private getDateString;
+    private getAndamentoPath;
+    private getConcluidosPath;
     getAndamento(): Promise<any[]>;
     saveAndamento(lista: any[]): Promise<void>;
     getConcluidos(): Promise<any[]>;

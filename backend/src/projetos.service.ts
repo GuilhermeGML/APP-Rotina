@@ -5,12 +5,27 @@ import * as path from 'path';
 
 @Injectable()
 export class ProjetosService {
-  private andamentoPath = path.join(process.cwd(), 'data', 'projetos-andamento.json');
-  private concluidosPath = path.join(process.cwd(), 'data', 'projetos-concluidos.json');
+  private dataDir = path.join(process.cwd(), 'data');
+
+  private getDateString() {
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    return `${dia}-${mes}-${ano}`;
+  }
+
+  private getAndamentoPath() {
+    return path.join(this.dataDir, `projetos-andamento-${this.getDateString()}.json`);
+  }
+  private getConcluidosPath() {
+    return path.join(this.dataDir, `projetos-concluidos-${this.getDateString()}.json`);
+  }
 
   async getAndamento(): Promise<any[]> {
     try {
-      const data = await fs.readFile(this.andamentoPath, 'utf-8');
+      // Busca o arquivo do dia, se não existir, retorna []
+      const data = await fs.readFile(this.getAndamentoPath(), 'utf-8');
       return JSON.parse(data);
     } catch {
       return [];
@@ -18,12 +33,12 @@ export class ProjetosService {
   }
 
   async saveAndamento(lista: any[]): Promise<void> {
-    await fs.writeFile(this.andamentoPath, JSON.stringify(lista, null, 2));
+    await fs.writeFile(this.getAndamentoPath(), JSON.stringify(lista, null, 2));
   }
 
   async getConcluidos(): Promise<any[]> {
     try {
-      const data = await fs.readFile(this.concluidosPath, 'utf-8');
+      const data = await fs.readFile(this.getConcluidosPath(), 'utf-8');
       return JSON.parse(data);
     } catch {
       return [];
@@ -31,6 +46,6 @@ export class ProjetosService {
   }
 
   async saveConcluidos(lista: any[]): Promise<void> {
-    await fs.writeFile(this.concluidosPath, JSON.stringify(lista, null, 2));
+    await fs.writeFile(this.getConcluidosPath(), JSON.stringify(lista, null, 2));
   }
 }

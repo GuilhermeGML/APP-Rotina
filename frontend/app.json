@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "AppRotina",
+  "name": "AppRotina",
+  "sdkVersion": "54.0.0",
     "slug": "AppRotina",
     "version": "1.0.0",
     "orientation": "portrait",

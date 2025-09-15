@@ -5,12 +5,26 @@ import * as path from 'path';
 
 @Injectable()
 export class TasksService {
-  private pendingPath = path.join(process.cwd(), 'data', 'tarefas-pendentes.json');
-  private donePath = path.join(process.cwd(), 'data', 'tarefas-concluidas.json');
+  private dataDir = path.join(process.cwd(), 'data');
+
+  private getDateString() {
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    return `${dia}-${mes}-${ano}`;
+  }
+
+  private getPendingPath() {
+    return path.join(this.dataDir, `tarefas-pendentes-${this.getDateString()}.json`);
+  }
+  private getDonePath() {
+    return path.join(this.dataDir, `tarefas-concluidas-${this.getDateString()}.json`);
+  }
 
   async getPendingTasks(): Promise<string[]> {
     try {
-      const data = await fs.readFile(this.pendingPath, 'utf-8');
+      const data = await fs.readFile(this.getPendingPath(), 'utf-8');
       return JSON.parse(data);
     } catch {
       return [];
@@ -19,7 +33,7 @@ export class TasksService {
 
   async getDoneTasks(): Promise<string[]> {
     try {
-      const data = await fs.readFile(this.donePath, 'utf-8');
+      const data = await fs.readFile(this.getDonePath(), 'utf-8');
       return JSON.parse(data);
     } catch {
       return [];
@@ -27,10 +41,10 @@ export class TasksService {
   }
 
   async savePendingTasks(tasks: string[]): Promise<void> {
-    await fs.writeFile(this.pendingPath, JSON.stringify(tasks, null, 2));
+    await fs.writeFile(this.getPendingPath(), JSON.stringify(tasks, null, 2));
   }
 
   async saveDoneTasks(tasks: string[]): Promise<void> {
-    await fs.writeFile(this.donePath, JSON.stringify(tasks, null, 2));
+    await fs.writeFile(this.getDonePath(), JSON.stringify(tasks, null, 2));
   }
 }

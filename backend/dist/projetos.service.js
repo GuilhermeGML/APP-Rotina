@@ -11,11 +11,23 @@ const common_1 = require("@nestjs/common");
 const fs_1 = require("fs");
 const path = require("path");
 let ProjetosService = class ProjetosService {
-    andamentoPath = path.join(process.cwd(), 'data', 'projetos-andamento.json');
-    concluidosPath = path.join(process.cwd(), 'data', 'projetos-concluidos.json');
+    dataDir = path.join(process.cwd(), 'data');
+    getDateString() {
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        return `${dia}-${mes}-${ano}`;
+    }
+    getAndamentoPath() {
+        return path.join(this.dataDir, `projetos-andamento-${this.getDateString()}.json`);
+    }
+    getConcluidosPath() {
+        return path.join(this.dataDir, `projetos-concluidos-${this.getDateString()}.json`);
+    }
     async getAndamento() {
         try {
-            const data = await fs_1.promises.readFile(this.andamentoPath, 'utf-8');
+            const data = await fs_1.promises.readFile(this.getAndamentoPath(), 'utf-8');
             return JSON.parse(data);
         }
         catch {
@@ -23,11 +35,11 @@ let ProjetosService = class ProjetosService {
         }
     }
     async saveAndamento(lista) {
-        await fs_1.promises.writeFile(this.andamentoPath, JSON.stringify(lista, null, 2));
+        await fs_1.promises.writeFile(this.getAndamentoPath(), JSON.stringify(lista, null, 2));
     }
     async getConcluidos() {
         try {
-            const data = await fs_1.promises.readFile(this.concluidosPath, 'utf-8');
+            const data = await fs_1.promises.readFile(this.getConcluidosPath(), 'utf-8');
             return JSON.parse(data);
         }
         catch {
@@ -35,7 +47,7 @@ let ProjetosService = class ProjetosService {
         }
     }
     async saveConcluidos(lista) {
-        await fs_1.promises.writeFile(this.concluidosPath, JSON.stringify(lista, null, 2));
+        await fs_1.promises.writeFile(this.getConcluidosPath(), JSON.stringify(lista, null, 2));
     }
 };
 exports.ProjetosService = ProjetosService;
