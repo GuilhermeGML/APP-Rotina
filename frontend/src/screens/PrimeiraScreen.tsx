@@ -15,7 +15,7 @@ export default function PrimeiraScreen() {
   const [input, setInput] = useState("");
 
   const hoje = new Date();
-  const dataFormatada = `${hoje.getDate().toString().padStart(2, "0")}/$${
+  const dataFormatada = `${hoje.getDate().toString().padStart(2, "0")}/${
     (hoje.getMonth() + 1).toString().padStart(2, "0")
   }/${hoje.getFullYear()}`;
 
